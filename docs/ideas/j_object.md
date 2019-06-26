@@ -35,3 +35,5 @@ import jumpscale as j
 
 j.mod.submod.impl.core
 ```
+
+Other principles like state management need to be discussed (also make sure it would cover actual jumpscale usescaes).
