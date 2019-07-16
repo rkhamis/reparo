@@ -50,7 +50,7 @@ class SecureConfigSource:
     @property
     def data(self):
         try:
-            return self._get_instance_config()
+            return self._get_instance_config()[self.instance_name]
         except Exception:
             return {}
     
