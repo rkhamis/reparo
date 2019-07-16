@@ -3,8 +3,8 @@
 next generation of jumpscale
 
 - clone repo
-- `cd js-ng`
-- `export PYTHONPATH='clients:core:data:main:sals:tools'`
+- `cd reparo/js-ng`
+
 
 ## core
 - config: single entry point for configuration retrieval/update
