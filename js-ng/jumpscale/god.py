@@ -12,24 +12,14 @@ loaded = False
 import sys
 import importlib.util
 
-def lazy(fullname):
-  try:
-    return sys.modules[fullname]
-  except KeyError:
-    spec = importlib.util.find_spec(fullname)
-    module = importlib.util.module_from_spec(spec)
-    loader = importlib.util.LazyLoader(spec.loader)
-    # Make module with proper locking and get it inserted into sys.modules.
-    loader.exec_module(module)
-    return module
+loaded = False
 
 def load():
-    global loaded
-    if loaded:
-        return 
-    print(jumpscale.__path__)
+    # global loaded
+    # if loaded:
+    #     return 
+    # print(jumpscale.__path__)
     for jsnamespace in jumpscale.__path__:
-        # print("js namespace: ", jsnamespace)
         for root, dirs, files in os.walk(jsnamespace):
             for d in dirs:
                 if d == "__pycache__":
@@ -41,35 +31,47 @@ def load():
                 pkgname = d
                 importedpkgstr = "jumpscale.{}.{}".format(rootbase, pkgname)
                 __all__.append(importedpkgstr)
-                print("import: ", importedpkgstr)
-                globals()[importedpkgstr] = lazy_import.lazy_module(importedpkgstr)
+                # print("import: ", importedpkgstr)
+                globals()[importedpkgstr] = lazy_import.lazy_module(importedpkgstr) #importlib.lazy_module(importedpkgstr) #lazy_import.lazy_module(importedpkgstr)
 
-    loaded = True
+    # loaded = True
 
-    print([x for x in globals() if "jumpscale." in x])
+    # print([x for x in globals() if "jumpscale." in x])
 
-load()
+
 
 class J:
+    def __init__(self):
+        self._loadednames = set()
+        self._loadedallsubpackages = False
+
     def __getattr__(self, name):
+        if not self._loadedallsubpackages:
+            load()
+            self._loadedallsubpackages = True
+
+        if name not in self._loadednames:
+            # print("name : ", name)
+            self._loadednames.add(name)
+            # load()
+            importlib.import_module("jumpscale.{}".format(name))
+            for m in [x for x in globals() if "jumpscale." in x]:
+                parts = m.split(".")[1:]
+                obj = jumpscale
+                while parts:
+                    p = parts.pop(0)
+                    obj = getattr(obj, p)
+                    # print(obj)
+                try:
+                    for attr in dir(obj):
+                        try:
+                            # print("getting attr {} from obj {}".format(attr, obj))
+                            getattr(obj, attr)
+                        except Exception:
+                            pass
+                except:
+                    print("can't dir object: ", obj)            
+
         return getattr(jumpscale, name)
 
 j = J()
-
-for m in [x for x in globals() if "jumpscale." in x]:
-    parts = m.split(".")[1:]
-    obj = jumpscale
-    while parts:
-        p = parts.pop(0)
-        obj = getattr(obj, p)
-        print(obj)
-    try:
-        for attr in dir(obj):
-            try:
-                print("getting attr {} from obj {}".format(attr, obj))
-                getattr(obj, attr)
-            except Exception:
-                pass
-    except:
-        print("can't dir object: ", obj)            
-

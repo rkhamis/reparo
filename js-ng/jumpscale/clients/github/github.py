@@ -7,6 +7,7 @@ class Github(SecureClient):
         super().__init__(self)
     
     def hi(self):
+        print("hii")
         j.sals.fs.basename('aa')
         
 
