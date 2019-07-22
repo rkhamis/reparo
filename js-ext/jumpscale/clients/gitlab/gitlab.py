@@ -1,4 +1,5 @@
 from jumpscale.clients.base import SecureClient
+from jumpscale.god import j
 
 class Gitlab(SecureClient):
     def __init__(self, instance_name='myinstance'):
@@ -6,7 +7,6 @@ class Gitlab(SecureClient):
         super().__init__(self)
     
     def hi(self):
-        from jumpscale.god import j
 
         print("gitlab client")
         j.sals.fs.basename('aa')
