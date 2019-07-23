@@ -1,24 +1,91 @@
-import lazy_import 
 import os
 import importlib
-import jumpscale
 import pkgutil
-
-
-__all__ = []
-
-loaded = False
-
-import sys
 import importlib.util
+import lazy_import
+import jumpscale
 
-loaded = False
+"""
+the idea is with hierarchy like this
+
+project1/
+         /rootnamespace (jumpscale)
+            /subnamespace1
+                ... pkg1
+                ... pkg2
+            /subnamespace2
+                ... pkg1
+                ... pkg2
+project2/
+         /rootnamespace (jumpscale)
+            /subnamespace1
+                ... pkg1
+                ... pkg2
+            /subnamespace2
+                ... pkg1
+                ... pkg2
+
+- we get all the paths of the `rootnamespace`
+- we get all the subnamespaces 
+- we get all the inner packages and import all of them (lazily) or load them eagerly but just once.
+
+
+real example: 
+js-ng
+├── jumpscale   <- root namespace
+│   ├── clients  <- subnamespace where people can register on
+│   │   ├── base.py
+│   │   ├── github   <- package in subnamespace
+│   │   │   ├── github.py
+│   │   │   └── __init__.py
+│   │   └── gogs
+│   │       ├── gogs.py
+│   │       └── __init__.py
+│   ├── core
+│   │   ├── config.py
+│   │   ├── exceptions.py
+│   │   └── logging.py
+│   ├── data
+│   │   ├── idgenerator
+│   │   │   ├── idgenerator.py
+│   │   │   └── __init__.py
+│   │   └── serializers
+│   │       ├── __init__.py
+│   │       └── serializers.py
+│   ├── god.py
+│   ├── sals
+│   │   └── fs
+│   │       ├── fs.py
+│   │       └── __init__.py
+│   └── tools
+│       └── keygen
+│           ├── __init__.py
+│           └── keygen.py
+├── README.md
+└── tests
+    └── test_loads_j.py
+js-ext
+├── jumpscale
+│   ├── clients
+│   │   └── gitlab
+│   │       ├── gitlab.py
+│   │       └── __init__.py
+│   ├── sals
+│   │   └── zos
+│   │       ├── __init__.py
+│   │       └── zos.py
+│   └── tools
+├── README.md
+└── tests
+    └── test_success.py
+
+
+"""
+
+__all__ = ['j']
+
 
 def load():
-    # global loaded
-    # if loaded:
-    #     return 
-    # print(jumpscale.__path__)
     for jsnamespace in jumpscale.__path__:
         for root, dirs, files in os.walk(jsnamespace):
             for d in dirs:
@@ -34,13 +101,12 @@ def load():
                 # print("import: ", importedpkgstr)
                 globals()[importedpkgstr] = lazy_import.lazy_module(importedpkgstr) #importlib.lazy_module(importedpkgstr) #lazy_import.lazy_module(importedpkgstr)
 
-    # loaded = True
-
-    # print([x for x in globals() if "jumpscale." in x])
-
-
 
 class J:
+    """
+        Here we simulate god object `j` by delegating the calls to suitable subnamespace    
+    
+    """
     def __init__(self):
         self._loadednames = set()
         self._loadedallsubpackages = False
@@ -70,7 +136,7 @@ class J:
                         except Exception:
                             pass
                 except:
-                    print("can't dir object: ", obj)            
+                    print("can't dir object: ", obj)
 
         return getattr(jumpscale, name)
 
