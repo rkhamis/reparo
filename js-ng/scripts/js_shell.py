@@ -31,3 +31,6 @@ ip.showtraceback = exception_thunk
 def js_shell():
     from jumpscale.god import j
     embed(colors='Linux')
+
+if __name__ == "__main__":
+    js_shell()
