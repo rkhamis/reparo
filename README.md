@@ -16,3 +16,8 @@ config management/automation framework
 - Documentation
 - Tests
 
+
+
+## Running tests
+- `make tests`
+- `bash runtests.sh`
