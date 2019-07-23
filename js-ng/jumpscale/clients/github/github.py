@@ -9,7 +9,10 @@ class Github(SecureClient):
     def hi(self):
         print("hii")
         j.sals.fs.basename('aa')
-        
+    
+    def hi2(self):
+        gl = j.clients.gitlab.Gitlab('b')
+        gl.hi()
 
 if __name__ == "__main__":
     g = Github('xmon')
