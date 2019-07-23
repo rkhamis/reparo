@@ -16,8 +16,13 @@ config management/automation framework
 - Documentation
 - Tests
 
-
+## Development environment
+- clone repo
+- `pipenv shell` 
 
 ## Running tests
 - `make tests`
 - `bash runtests.sh`
+
+## Generating docs
+- `make docs`
