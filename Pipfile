@@ -4,11 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+ipython = "*"
 
 [packages]
 lazy-import = "==0.2.2"
 pytoml = "==0.1.20"
 secretconf = "==0.1.2"
+better-exceptions = "*"
 
 [requires]
 python_version = "3.6"
